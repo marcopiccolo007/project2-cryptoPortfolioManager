@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,11 +36,25 @@ public class CryptoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Crypto>> getAllCryptos() {
-        List<Crypto> newCryptosInList = new ArrayList<>();
-        newCryptosInList = cryptoService.getAllCryptos();
-        return new ResponseEntity<>(newCryptosInList, HttpStatus.OK);
-    }
+    public ResponseEntity<List<Crypto>> getAllCryptos(
+            @RequestParam(name = "sort", required = false) String sort) {
+            // validace hodnoty sort – podporovány jen name|price|quantity
+            if (sort != null && !sort.isBlank()) {
+                String sortBy = sort.toLowerCase();
+                if (!(sortBy.equals("name") || sortBy.equals("price") || sortBy.equals("quantity"))) {
+                    // 400 Bad Request – "sebere to"" globální handler a vrátí JSON chybu
+                    throw new IllegalArgumentException("Unsupported sort value. Use one of: name, price, quantity.");
+                }
+            }
+
+            List<Crypto> result = cryptoService.getAllCryptos(sort);
+
+            if (result.isEmpty()) {
+                // 204 No Content – bez body
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
     @GetMapping("/{id}")
     public ResponseEntity<Crypto> getCryptoById(@PathVariable UUID id) {
@@ -72,7 +85,7 @@ public class CryptoController {
     }
 
     //
-    @GetMapping("/porfolio-value")
+    @GetMapping("/portfolio-value")
     public ResponseEntity calculateTotalCryptosValue() {
         double totalCryptosValue = cryptoService.calculateTotalCryptosValue();
         if (totalCryptosValue == 0.0) {
@@ -82,4 +95,4 @@ public class CryptoController {
         }
     }
 
-}
+}// konec třídy CryptoController

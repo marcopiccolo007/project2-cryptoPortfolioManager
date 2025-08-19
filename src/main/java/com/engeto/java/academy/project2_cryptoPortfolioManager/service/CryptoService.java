@@ -3,9 +3,8 @@ package com.engeto.java.academy.project2_cryptoPortfolioManager.service;
 import com.engeto.java.academy.project2_cryptoPortfolioManager.model.Crypto;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CryptoService {
@@ -27,11 +26,35 @@ public class CryptoService {
     }
 
     // Výpis seznamu všech kryptoměn
-    public List<Crypto> getAllCryptos() {
-        return new ArrayList<>(cryptosInList); // vrací kopii seznamu
+    public List<Crypto> getAllCryptos(String sortedBy) {
+        List<Crypto> allCryptos = new ArrayList<>(cryptosInList);
+        if (allCryptos.isEmpty()) return allCryptos;// vrátí neseřazený seznam
+        if (sortedBy == null || sortedBy.isBlank()) {
+            return allCryptos;// vrátí neseřazený seznam
+        }
+        switch (sortedBy.toLowerCase()) {
+            case "name" -> allCryptos.sort(
+                    Comparator.comparing(
+                            Crypto::getName,
+                            Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)
+                    )
+            );
+            case "price" -> allCryptos.sort(
+                    Comparator.comparing(
+                            Crypto::getPrice,
+                            Comparator.nullsLast(Double::compareTo)
+                    )
+            );
+            case "quantity" -> allCryptos.sort(
+                    Comparator.comparing(
+                            Crypto::getQuantity,
+                            Comparator.nullsLast(Double::compareTo)
+                    )
+            );
+            default -> { /* nic – ponecháno původní řazení */ }
+        }
+        return allCryptos;
     }
-
-    // TO DO - Seřazení kryptoměn podle názvu, ceny nebo počtu jednotek.
 
     // Získání kryptoměny podle ID
     public Crypto getCryptoById(UUID id) {
@@ -70,4 +93,4 @@ public class CryptoService {
         return totalValue;
     }
 
-}
+}//konec třídy CryptoService
