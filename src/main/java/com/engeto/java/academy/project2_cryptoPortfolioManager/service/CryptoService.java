@@ -1,0 +1,73 @@
+package com.engeto.java.academy.project2_cryptoPortfolioManager.service;
+
+import com.engeto.java.academy.project2_cryptoPortfolioManager.model.Crypto;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class CryptoService {
+
+    private final UuidService uuidService;
+
+    public CryptoService(UuidService uuidService) {
+        this.uuidService = uuidService;
+    }
+
+    private List<Crypto> cryptosInList = new ArrayList<>();
+
+    // Přidání nové kryptoměny
+    public Crypto addCrypto(String name, String symbol, double price, double quantity) {
+        UUID id = uuidService.generateUuid(); // generování unikátního ID
+        Crypto crypto = new Crypto(id, name, symbol, price, quantity);
+        cryptosInList.add(crypto);
+        return crypto;
+    }
+
+    // Výpis seznamu všech kryptoměn
+    public List<Crypto> getAllCryptos() {
+        return new ArrayList<>(cryptosInList); // vrací kopii seznamu
+    }
+
+    // TO DO - Seřazení kryptoměn podle názvu, ceny nebo počtu jednotek.
+
+    // Získání kryptoměny podle ID
+    public Crypto getCryptoById(UUID id) {
+        for (Crypto crypto : cryptosInList) {
+            if (crypto.getId().equals(id)) {
+                return crypto;
+            }
+        }
+        return null;
+    }
+
+    // Aktualizace existující kryptoměny
+    public Crypto updateCrypto(UUID id, String name, String symbol, double price, double quantity) {
+        for (Crypto crypto : cryptosInList) {
+            if (crypto.getId().equals(id)) {
+                crypto.setName(name);
+                crypto.setSymbol(symbol);
+                crypto.setPrice(price);
+                crypto.setQuantity(quantity);
+                return crypto;
+            }
+        }
+        return null;
+    }
+
+    // Výpočet celkové hodnoty všech kryptoměn v seznamu
+    public double calculateTotalCryptosValue() {
+        double totalValue = 0.0;
+        if (cryptosInList.isEmpty()) {
+            return totalValue;
+        } else {
+            for (Crypto crypto : cryptosInList) {
+                totalValue += (crypto.getPrice()) * (crypto.getQuantity());
+            }
+        }
+        return totalValue;
+    }
+
+}
