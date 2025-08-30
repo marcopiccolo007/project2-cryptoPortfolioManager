@@ -20,8 +20,8 @@ public class Crypto {
 
     @NotBlank(message = "symbol must not be blank")
     @Pattern(
-            regexp = "^[A-Z0-9]{2,5}$",
-            message = "symbol must be 2-5 uppercase alphanumerics (e.g., BTC, ETC, TAR)"
+            regexp = "^[A-Z0-9]{3,5}$",
+            message = "symbol must be 3-5 uppercase alphanumerics (e.g., BTC, ETC, TAR)"
     )
     private String symbol;
 
