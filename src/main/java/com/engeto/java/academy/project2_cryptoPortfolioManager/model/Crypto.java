@@ -32,5 +32,4 @@ public class Crypto {
     @NotNull(message = "quantity must be provided")
     @PositiveOrZero(message = "quantity must be >= 0")
     private Double quantity;
-
 }

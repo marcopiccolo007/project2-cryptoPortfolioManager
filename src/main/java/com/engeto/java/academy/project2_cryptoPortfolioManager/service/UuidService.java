@@ -10,5 +10,4 @@ public class UuidService {
     public UUID generateUuid() {
         return UUID.randomUUID();
     }
-
 }

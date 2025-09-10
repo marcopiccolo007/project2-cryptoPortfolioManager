@@ -9,5 +9,4 @@ public class Project2CryptoPortfolioManagerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(Project2CryptoPortfolioManagerApplication.class, args);
 	}
-
 }
