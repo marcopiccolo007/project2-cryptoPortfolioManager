@@ -4,9 +4,9 @@ import com.engeto.java.academy.project2_cryptoPortfolioManager.dto.CreateCryptoR
 import com.engeto.java.academy.project2_cryptoPortfolioManager.dto.UpdateCryptoRequest;
 import com.engeto.java.academy.project2_cryptoPortfolioManager.model.Crypto;
 import com.engeto.java.academy.project2_cryptoPortfolioManager.service.CryptoService;
-import com.engeto.java.academy.project2_cryptoPortfolioManager.service.UuidService;
+
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +21,8 @@ import java.util.UUID;
 public class CryptoController {
 
     private final CryptoService cryptoService;
-    private final UuidService uuidService;
 
-    public CryptoController(CryptoService cryptoService, UuidService uuidService) {
-        this.uuidService = uuidService;
+    public CryptoController(CryptoService cryptoService) {
         this.cryptoService = cryptoService;
     }
 
@@ -36,7 +34,9 @@ public class CryptoController {
                 req.price(),
                 req.quantity()
         );
-        return ResponseEntity.created(URI.create("/api/cryptos/" + createdCrypto.getId())).body(createdCrypto);
+        return ResponseEntity
+                .created(URI.create("/api/cryptos/" + createdCrypto.getId()))
+                .body(createdCrypto);
     }
 
     @PutMapping("/{id}")
@@ -55,31 +55,17 @@ public class CryptoController {
 
     @GetMapping
     public ResponseEntity<List<Crypto>> getAllCryptos(
-            @RequestParam(name = "sort", required = false) String sort) {
-            // validace hodnoty sort – podporovány jen name|price|quantity
-            if (sort != null && !sort.isBlank()) {
-                String sortBy = sort.toLowerCase();
-                if (!(sortBy.equals("name") || sortBy.equals("price") || sortBy.equals("quantity"))) {
-                    // 400 Bad Request – "sebere to"" globální handler a vrátí JSON chybu
-                    throw new IllegalArgumentException("Unsupported sort value. Use one of: name, price, quantity.");
-                }
-            }
-
-            List<Crypto> result = cryptoService.getAllCryptos(sort);
-            if (result.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();// 204 No Content – bez body
-            }
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }
+            @RequestParam(name = "sort", required = false)
+            @Pattern(regexp = "^(name|price|quantity)$", message = "Allowed values: name, price, quantity")
+            String sortedBy
+    ) {
+        List<Crypto> cryptos = cryptoService.getAllCryptos(sortedBy);
+        return ResponseEntity.ok(cryptos); // i prázdný seznam → 200 OK + []
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Crypto> getCryptoById(@PathVariable UUID id) {
-        Crypto retrievedCrypto = cryptoService.getCryptoById(id);
-        if (retrievedCrypto != null) {
-            return new ResponseEntity<>(retrievedCrypto, HttpStatus.OK);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(cryptoService.getCryptoById(id));
     }
 
     @DeleteMapping("/{id}")
@@ -91,7 +77,6 @@ public class CryptoController {
     @GetMapping("/portfolio-value")
     public ResponseEntity<Double> calculateTotalCryptosValue() {
         double totalCryptosValue = cryptoService.calculateTotalCryptosValue();
-        if (totalCryptosValue == 0.0) return ResponseEntity.noContent().build();// 204 bez body
-        return ResponseEntity.ok(totalCryptosValue);
-        }
+        return ResponseEntity.ok(totalCryptosValue); // vždy vrací číslo (včetně 0.0)
+    }
 }
