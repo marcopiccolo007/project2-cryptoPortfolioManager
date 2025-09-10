@@ -12,7 +12,7 @@
 	<artifactId>project2-cryptoPortfolioManager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>project2-cryptoPortfolioManager</name>
-	<description>Spring Boot test project developed within ENGETO Java Academy course</description>
+	<description>Spring Boot test project used for development within ENGETO Java Academy course</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -29,27 +29,35 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+
 	<dependencies>
+        <!-- Základ: Spring Boot Web (REST API, Jackson JSON, Tomcat) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
-		<dependency>
+        <!-- Validace (jakarta.validation + hibernate-validator) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <!-- Lombok (pokud ho používáš na modely / DTO) -->
+        <dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+        <!-- Testování -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-		<dependency>
-			<groupId>jakarta.validation</groupId>
-			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.1.1</version>
 		</dependency>
 	</dependencies>
 
